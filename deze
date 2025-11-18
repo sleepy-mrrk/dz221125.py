@@ -1,0 +1,38 @@
+import telebot
+import os
+from random import choice
+from settings import TG_API_TOKEN
+
+bot = telebot.TeleBot(TG_API_TOKEN)
+
+@bot.message_handler(commands=['start'])
+def start_command(message):
+    text = (
+        f'Привет, {message.from_user.first_name}!\n'
+        'Напиши /mem, и я отправлю тебе случайный мем\n'
+        'Напиши /memIT, и я отправлю тебе случайный IT мем\n'
+        'Напиши /memcat, и я отправлю тебе случайный мем с котиком\n'
+    )
+    bot.send_message(message.chat.id, text)
+
+@bot.message_handler(commands=['mem'])
+def send_mem(message):
+    folder = choice(['images', 'catimages'])
+    random_mem = choice(os.listdir(folder))  # 'mem1.jpeg'
+    with open(f'{folder}/{random_mem}', 'rb') as f:
+        bot.send_photo(message.chat.id, f)
+
+
+@bot.message_handler(commands=['memcat'])
+def send_mem(message):
+    random_mem = choice(os.listdir('catimages'))  # 'mem1.jpeg'
+    with open(f'catimages/{random_mem}', 'rb') as f:
+        bot.send_photo(message.chat.id, f)
+
+@bot.message_handler(commands=['memIT'])
+def send_mem(message):
+    random_mem = choice(os.listdir('images'))  # 'mem1.jpeg'
+    with open(f'images/{random_mem}', 'rb') as f:
+        bot.send_photo(message.chat.id, f)
+
+bot.infinity_polling()
