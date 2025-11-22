@@ -1,0 +1,57 @@
+import telebot
+import os
+from random import choice
+from settings import TG_API_TOKEN
+
+bot = telebot.TeleBot(TG_API_TOKEN)
+
+LINKS = [
+    "https://youtu.be/nk4QLVUSU6s",
+    "https://youtu.be/1VJyN7yUgFY",
+    "https://youtu.be/a3qbELMsQTM",
+    "https://youtu.be/lTGn5HI5wFg",
+    "https://youtu.be/nStV07BrD-Q"
+]
+
+print("Бот запущен")
+
+@bot.message_handler(commands=['start'])
+def start_command(message):
+    text = (
+        f'Привет, {message.from_user.first_name}!💫\n'
+        '🍃Если ты здесь, значит, ты увлекаешься экологией! Похвально. (. ❛ ᴗ ❛.) Тут есть такие команды:\n'
+        '🥬Команда /meme — отправляет случайный мем\n'
+        '🌿Команда /link — отправляет случайную ссылку\n'
+        '🍂Команда /info — отправляет информацию о боте\n'
+    )
+    bot.send_message(message.chat.id, text)
+
+@bot.message_handler(commands=['meme'])
+def send_meme(message):
+    files = os.listdir('images')
+    random_file = choice(files)
+    with open(f'images/{random_file}', 'rb') as f:
+        bot.send_photo(message.chat.id, f)
+
+@bot.message_handler(commands=['info'])
+def send_info(message):
+    text = (
+        "Этот бот помогает делать маленькие eco-шаги понятными и простыми.\n\n"
+        "Здесь можно получить:\n"
+        "• Полезные видео о экологии с YouTube\n"
+        "• Остроумные мемы на тему заботы о природе\n\n"
+        "Бот подсказывает, как снижать мусор, экономить ресурсы и относиться к планете чуть внимательнее."
+    )
+    bot.send_message(message.chat.id, text)
+
+
+
+
+@bot.message_handler(commands=['link'])
+def send_link(message):
+    if not LINKS:
+        bot.send_message(message.chat.id, 'Список ссылок пуст.')
+    else:
+        bot.send_message(message.chat.id, choice(LINKS))
+
+bot.infinity_polling()
